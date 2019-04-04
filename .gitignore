@@ -1,0 +1,15 @@
+packages/tbootxm-windows/target/
+packages/tbootxm-zip/target/
+packages/tbootxm/target/
+tpmextend/bin/
+tpmextend/build/
+windows_bootdriver/tbootxm_bootdriver.sdf
+windows_bootdriver/tbootxm_bootdriver.v12.suo
+windows_bootdriver/tbootxm_bootdriver Package/tbootxm_bootdriver Package.vcxproj.user
+windows_bootdriver/tbootxm_bootdriver/tbootxm_bootdriver.vcxproj.user
+windows_bootdriver/signed/
+windows_bootdriver/tbootxm_bootdriver Package/x64/
+windows_bootdriver/tbootxm_bootdriver/x64/
+windows_bootdriver/x64/
+.idea
+*.iml
