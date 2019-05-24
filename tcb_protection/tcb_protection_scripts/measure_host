@@ -249,6 +249,11 @@ tpm_extend()
 	#Grab the value of tpm_version from TrustAgent Configuration
 	tpm_version=`cat $tpm_version_file`
 	log "tpm version : $tpm_version"
+	if [ "$tpm_version" = "" ]; then
+        	log "No TPM version specified"
+        	unmount_partitions
+        	return 1
+        fi
 
 	for filename in `ls "$measurement_path"_*.xml`; do
 		measurement_file="$(basename "$filename")"
@@ -273,6 +278,8 @@ tpm_extend()
 
 		if [ "$tpm_version" == "1.2" ]; then
 			image_hash=`/bin/hex2bin $image_hash | sha1sum - | awk '{ print $1; }'`
+		else
+			image_hash=`/bin/hex2bin $image_hash | sha256sum - | awk '{ print $1; }'`
 		fi
 		log "image hash : $image_hash"
 
