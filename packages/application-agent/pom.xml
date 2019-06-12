@@ -3,9 +3,10 @@
     
     <groupId>com.intel.mtwilson.tbootxm.packages</groupId>
     <artifactId>application-agent</artifactId>
+    <version>4.5-SNAPSHOT</version>
     
     <packaging>pom</packaging>
-    <description>Self-extracting executable that installs the Measurement Agent</description>
+    <description>Self-extracting executable that installs the Application Agent</description>
     
     <parent>
         <groupId>com.intel.mtwilson.maven</groupId>
@@ -26,16 +27,10 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-        <!--dependency>
-            <groupId>com.intel.mtwilson.tbootxm.packages</groupId>
-            <artifactId>tbootxm-rpmmio</artifactId>
-            <version>${project.version}</version>
-            <type>bin</type>
-        </dependency-->
-	<dependency>
+        <dependency>
             <groupId>com.intel.mtwilson.core.packages</groupId>
             <artifactId>lib-workload-measurement</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
             <type>zip</type>
         </dependency>
         <dependency>

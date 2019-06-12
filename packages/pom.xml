@@ -10,7 +10,6 @@
     <modules>
         <module>application-agent</module>
         <module>tbootxm-zip</module>
-        <module>tbootxm-windows</module>
     </modules>
     
 </project>

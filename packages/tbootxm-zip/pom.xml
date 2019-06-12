@@ -3,9 +3,10 @@
     
     <groupId>com.intel.mtwilson.tbootxm.packages</groupId>
     <artifactId>tbootxm-zip</artifactId>
+    <version>4.5-SNAPSHOT</version>
     
     <packaging>pom</packaging>
-    <description>Application Agent</description>
+    <description>Application Agent Zip Package</description>
     
     <parent>
         <groupId>com.intel.mtwilson.maven</groupId>
@@ -17,10 +18,6 @@
     <properties>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
-        <!-- format examples, see http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html for complete documentation:
-             "EEE, d MMM yyyy HH:mm:ss Z"	Wed, 4 Jul 2001 12:08:56 -0700
-             "yyyy-MM-dd'T'HH:mm:ss.SSSZ"	2001-07-04T12:08:56.235-0700   
-        -->
     </properties>
     
     <profiles>
