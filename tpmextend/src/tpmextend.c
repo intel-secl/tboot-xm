@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2019 Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/*
+ * tpmextend.c
+ *
+ *  Created on: 26-June-2018
+ *      Author: Arvind Rawat
+ */
+
 #include <stdlib.h>
 #include <fcntl.h>
 #include <errno.h>

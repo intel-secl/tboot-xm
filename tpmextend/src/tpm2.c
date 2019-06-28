@@ -1,4 +1,9 @@
 /*
+ * Copyright (C) 2019 Intel Corporation
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/*
  * tpm2.c
  *
  *  Created on: 26-June-2018
