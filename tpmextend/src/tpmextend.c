@@ -23,8 +23,6 @@ extern int errno;
 #define BUFSIZE 4*1024
 #define MAX_HASH_LEN 65
 
-// RPMMIO
-//#define RPTPMDEVICE "/dev/rpmmio0"
 #define TPMDEVICE "/dev/tpm0"
 
 //map of asci char to hex values
@@ -137,8 +135,7 @@ int tpm_extend(int pcr, uint8_t *buff, int size) {
         fprintf(STDOUT, "tpm: write error, size %d > %d\n", size, TPM_DIGEST_SIZE);
         return -1;
 	}
-	
-	//copy_from_user(in.digest, buff, size);
+
 	memcpy_s(in.digest, TPM_DIGEST_SIZE, buff, size);
 	tpm_pcr_extend(pcr, &in, &out);
 	
@@ -172,7 +169,6 @@ int tpm_extend2(int pcr, uint8_t *buff, int size) {
         return -1;
 	}
 
-	//copy_from_user(in.sha256, buff, size);
 	memcpy_s(in.sha256, SHA256_DIGEST_SIZE, buff, size);
 	tpm_pcr_extend2(handle, hash, size, in.sha256);
 	
@@ -182,10 +178,6 @@ int tpm_extend2(int pcr, uint8_t *buff, int size) {
 
 int main(int argc, char** argv) {
 
-    //int     	offset;
-	//unsigned  locality;
-    //byte    rgpcr[BUFSIZE];
-    //byte    rgRandom[BUFSIZE];
     int     size = 0;
     int     ret = -1;
     int     pcrno = -1;
@@ -249,49 +241,7 @@ int main(int argc, char** argv) {
 		fprintf(STDOUT, "TPM2.0: Extend PCR\n");
 		ret = tpm_extend2(pcrno, digest, hash_size);
 	}
-/*
-    //test of rpmmio tpm driver
-    //Prepare and pass arguments pcr and locaity to the driver, by overriding
-    //the offset input field of lseek().
-    locality = 0;
-    size= BUFSIZE;
-
-	int returnSize=hash_size;
-    byte returnDigest[hash_size];
-    
-    locality=0;
-    offset = (pcrno<<16) | (locality&0XFFFF);
-    lseek(tpmfd, offset, SEEK_SET);
-    fprintf(STDOUT, "pcr %d, locality %d\n", pcrno, locality);
-    ret=read(tpmfd, &rgpcr, hash_size);
-    PrintBytes("PCR contents read by RPMMIO ", rgpcr, hash_size);
-    if(ret<0){
-        fprintf(STDOUT, "read failed\n");
-        close(tpmfd);
-        return false;
-    }
-    
-    locality=2;
-    offset = (pcrno<<16) | (locality&0XFFFF);
-    lseek(tpmfd, offset, SEEK_SET);
-    //int ret=read(tpmfd, rgpcr, size);
-    fprintf(STDOUT, "extend prc %d, locality %d\n", pcrno, locality);
-    ret = write(tpmfd, in.digest, hash_size);
-    
-    locality = 0;
-	offset = (pcrno<<16) | (locality&0XFFFF);
-    lseek(tpmfd, offset, SEEK_SET);
-    fprintf(STDOUT, "pcr %d, locality %d\n", pcrno, locality);
-    ret=read(tpmfd, &rgpcr, hash_size);
-    PrintBytes("PCR contents read by RPMMIO ", rgpcr, hash_size);
-    if(ret<0){
-        fprintf(STDOUT, "read failed, ret %d\n", ret);
-        close(tpmfd);
-        return false;
-    }
-*/    
-    close(tpmfd); 
-    //PrintBytes("PCR contents: ", out.digest, hash_size);
+    close(tpmfd);
 
 	if(ret < 0){
         fprintf(STDOUT, "submitTPMExtendReq failed\n");

@@ -14,8 +14,8 @@
 #include "tpm.h"
 
 /*
- * specified as minimum cmd buffer size should be supported by all 1.2 TPM
- * device in the TCG_PCClientTPMSpecification_1-20_1-00_FINAL.pdf
+ * specified as minimum cmd buffer size should be supported by all 1.2 TPM device
+ * as per TCG_PCClientTPMSpecification_1-20_1-00_FINAL.pdf
  */
 #define TPM_CMD_SIZE_MAX	768
 #define TPM_RSP_SIZE_MAX	768
@@ -46,11 +46,6 @@ static uint8_t     		rsp_buf[TPM_RSP_SIZE_MAX];
 
 static uint32_t tpm_write_cmd_fifo(uint8_t *in, uint32_t in_size, uint8_t *out, uint32_t *out_size) {
 
-    //uint32_t            i, rsp_size, offset, ret;
-    //uint16_t            row_size;
-    //tpm_reg_access_t    reg_acc;
-    //tpm_reg_sts_t       reg_sts;
-
     if ( in == NULL || out == NULL || out_size == NULL ) {
         fprintf(STDOUT, "TPM: Invalid parameter for tpm_write_cmd_fifo()\n");
         return TPM_BAD_PARAMETER;
@@ -72,137 +67,6 @@ static uint32_t tpm_write_cmd_fifo(uint8_t *in, uint32_t in_size, uint8_t *out, 
         close(tpmfd);
         return ret;
     }
-/*
-    /* write the command to the TPM FIFO *
-    offset = 0;
-    do {
-        i = 0;
-        do {
-            read_tpm_reg(locality, TPM_REG_STS, &reg_sts);
-            /* find out how many bytes the TPM can accept in a row *
-            row_size = reg_sts.burst_count;
-            if ( row_size > 0 )
-                break;
-            else
-                cpu_relax();
-            i++;
-        } while ( i <= TPM_CMD_WRITE_TIME_OUT );
-        if ( i > TPM_CMD_WRITE_TIME_OUT ) {
-            fprintf(KERN_ERR"TPM: write cmd timeout\n");
-            ret = TPM_FAIL;
-            goto RelinquishControl;
-        }
-
-        for ( ; row_size > 0 && offset < in_size; row_size--, offset++ )
-            write_tpm_reg(locality, TPM_REG_DATA_FIFO,
-                          (tpm_reg_data_fifo_t *)&in[offset]);
-    } while ( offset < in_size );
-
-    i = 0;
-    do {
-        read_tpm_reg(locality,TPM_REG_STS, &reg_sts);
-#ifdef TPM_TRACE
-        fprintf(STDOUT,"Wait on Expect = 0, Status register %02x\n", reg_sts._raw[0]);
-#endif
-        if ( reg_sts.sts_valid == 1 && reg_sts.expect == 0 )
-            break;
-        else
-            cpu_relax();
-        i++;
-    } while ( i <= TPM_DATA_AVAIL_TIME_OUT );
-    if ( i > TPM_DATA_AVAIL_TIME_OUT ) {
-        fprintf(KERN_ERR"TPM: wait for expect becoming 0 timeout\n");
-        ret = TPM_FAIL;
-        goto RelinquishControl;
-    }
-
-    /* command has been written to the TPM, it is time to execute it. *
-    memset(&reg_sts, 0,  sizeof(reg_sts));
-    reg_sts.tpm_go = 1;
-    write_tpm_reg(locality, TPM_REG_STS, &reg_sts);
-
-    /* check for data available *
-    i = 0;
-    do {
-        read_tpm_reg(locality,TPM_REG_STS, &reg_sts);
-#ifdef TPM_TRACE
-        fprintf(STDOUT,"Waiting for DA Flag, Status register %02x\n", reg_sts._raw[0]);
-#endif
-        if ( reg_sts.sts_valid == 1 && reg_sts.data_avail == 1 )
-            break;
-        else
-            cpu_relax();
-        i++;
-    } while ( i <= TPM_DATA_AVAIL_TIME_OUT );
-    if ( i > TPM_DATA_AVAIL_TIME_OUT ) {
-        fprintf(KERN_ERR"TPM: wait for data available timeout\n");
-        ret = TPM_FAIL;
-        goto RelinquishControl;
-    }
-
-    rsp_size = 0;
-    offset = 0;
-    do {
-        /* find out how many bytes the TPM returned in a row *
-        i = 0;
-        do {
-            read_tpm_reg(locality, TPM_REG_STS, &reg_sts);
-            row_size = reg_sts.burst_count;
-            if ( row_size > 0 )
-                break;
-            else
-                cpu_relax();
-            i++;
-        } while ( i <= TPM_RSP_READ_TIME_OUT );
-        if ( i > TPM_RSP_READ_TIME_OUT ) {
-            fprintf(KERN_ERR"TPM: read rsp timeout\n");
-            ret = TPM_FAIL;
-            goto RelinquishControl;
-        }
-
-        for ( ; row_size > 0 && offset < *out_size; row_size--, offset++ ) {
-            if ( offset < *out_size )
-                read_tpm_reg(locality, TPM_REG_DATA_FIFO,
-                             (tpm_reg_data_fifo_t *)&out[offset]);
-            else {
-                /* discard the responded bytes exceeding out buf size *
-                tpm_reg_data_fifo_t discard;
-                read_tpm_reg(locality, TPM_REG_DATA_FIFO,
-                             (tpm_reg_data_fifo_t *)&discard);
-            }
-
-            /* get outgoing data size *
-            if ( offset == RSP_RST_OFFSET - 1 ) {
-                reverse_copy(&rsp_size, &out[RSP_SIZE_OFFSET],
-                             sizeof(rsp_size));
-            }
-        }
-    } while ( offset < RSP_RST_OFFSET ||
-              (offset < rsp_size && offset < *out_size) );
-
-    *out_size = (*out_size > rsp_size) ? rsp_size : *out_size;
-
-    /* out buffer contains the complete outgoing data, get return code *
-    reverse_copy(&ret, &out[RSP_RST_OFFSET], sizeof(ret));
-
-#ifdef TPM_TRACE
-    {
-        fprintf(STDOUT, "TPM: response size = %d\n", *out_size);
-        fprintf(STDOUT, "TPM: response content: ");
-        print_hex("TPM: \t", out, *out_size);
-    }
-#endif
-
-    memset(&reg_sts, 0, sizeof(reg_sts));
-    reg_sts.command_ready = 1;
-    write_tpm_reg(locality, TPM_REG_STS, &reg_sts);
-
-RelinquishControl:
-    /* deactivate current locality *
-    reg_acc._raw[0] = 0;
-    reg_acc.active_locality = 1;
-    write_tpm_reg(locality, TPM_REG_ACCESS, &reg_acc);
-*/
     return ret;
 }
 
