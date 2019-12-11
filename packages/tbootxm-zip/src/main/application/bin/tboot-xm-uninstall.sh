@@ -6,6 +6,7 @@ source $TBOOTXM_ENV_FILE
 
 . $TBOOTXM_BIN/functions.sh
 KERNEL_VERSION=`uname -r`
+GRUB_UPDATE="grub2-mkconfig -o $GRUB_FILE"
 REMOVE_GRUB_ENTRY_SCRIPT="${TBOOTXM_LIB}/remove_menuentry.pl"
 GRUB_ENTRY_FILE=""
 MENUENTRY_PREFIX="TCB-Protection"
@@ -115,7 +116,10 @@ function update_grub_entry()
 	then
 		echo "updating the grub file"
 		if [ $os_version == "fedora" ] || [ $os_version == "rhel" ]; then
-			grub2-mkconfig -o $GRUB_FILE
+	        ERROR_LOG_FILE=/tmp/grubupdate.err
+			$GRUB_UPDATE 2>$ERROR_LOG_FILE
+			exit_status=$?
+			check_error "$exit_status" grub2-mkconfig "$ERROR_LOG_FILE"
 		else
 			update-grub
 		fi
