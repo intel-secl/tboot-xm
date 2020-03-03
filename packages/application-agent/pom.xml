@@ -3,7 +3,7 @@
     
     <groupId>com.intel.mtwilson.tbootxm.packages</groupId>
     <artifactId>application-agent</artifactId>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     
     <packaging>pom</packaging>
     <description>Self-extracting executable that installs the Application Agent</description>
@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.intel.mtwilson.maven</groupId>
         <artifactId>mtwilson-maven-package-makeself-distro</artifactId>
-        <version>4.6.1-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
     
